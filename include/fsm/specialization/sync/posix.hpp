@@ -3,6 +3,8 @@
 #ifndef FSM_SPECIALIZATION_POSIX_HPP
 #define FSM_SPECIALIZATION_POSIX_HPP
 
+#include <date/date.h>
+#include <date/tz.h>
 #include <chrono>
 
 #include <fsm/sync.hpp>
@@ -14,19 +16,19 @@ class Repeatable {
 public:
     // duration in ms
     Repeatable(int duration) :
-        timeout(std::chrono::system_clock::now() + std::chrono::milliseconds(duration)), duration(duration) {
+        timeout(date::utc_clock::now() + std::chrono::milliseconds(duration)), duration(duration) {
     }
     Repeatable() : Repeatable(0){};
 
     // ms left until timeout
     int ticks_left() {
         auto diff =
-            std::chrono::duration_cast<std::chrono::milliseconds>(timeout - std::chrono::system_clock::now()).count();
+            std::chrono::duration_cast<std::chrono::milliseconds>(timeout - date::utc_clock::now()).count();
         return (diff < 0) ? 0 : diff;
     }
 
     void repeat_from_now() {
-        timeout = std::chrono::system_clock::now() + std::chrono::milliseconds(duration);
+        timeout = date::utc_clock::now() + std::chrono::milliseconds(duration);
     }
 
     void repeat_from_last() {
@@ -34,7 +36,7 @@ public:
     }
 
 private:
-    std::chrono::time_point<std::chrono::system_clock> timeout;
+    std::chrono::time_point<date::utc_clock> timeout;
     int duration;
 };
 } // namespace posix
