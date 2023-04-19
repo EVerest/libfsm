@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(fsm VERSION 0.1
-        DESCRIPTION "Finite State Machine library"
-		LANGUAGES CXX
+project(fsm
+    VERSION 0.2.0
+    DESCRIPTION "Finite State Machine library"
+    HOMEPAGE_URL "https://github.com/EVerest/libfsm"
+	LANGUAGES CXX
 )
 
 find_package(everest-cmake 0.1 REQUIRED
@@ -22,7 +24,7 @@ target_include_directories(fsm INTERFACE
 
 # build examples
 if (BUILD_EXAMPLES)
-    add_subdirectory(examples/light_switch)
+    add_subdirectory(examples)
 endif()
 
 if (FSM_INSTALL)
