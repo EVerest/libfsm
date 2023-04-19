@@ -11,9 +11,16 @@ find_package(everest-cmake 0.1 REQUIRED
     PATHS ../everest-cmake
 )
 
+#
+# options
+#
 option(BUILD_EXAMPLES "enable building of examples" OFF)
 option(FSM_INSTALL "Install the library (shared data might be installed anyway)" ${EVC_MAIN_PROJECT})
 
+
+#
+# library declaration
+#
 add_library(fsm INTERFACE)
 add_library(fsm::fsm ALIAS fsm)
 
@@ -22,11 +29,25 @@ target_include_directories(fsm INTERFACE
     $<INSTALL_INTERFACE:include>
 )
 
-# build examples
+#
+# examples
+#
 if (BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
+#
+# tests
+#
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    include(CTest)
+    add_subdirectory(tests)
+endif()
+
+
+#
+# installation definition
+#
 if (FSM_INSTALL)
     install(
         TARGETS fsm
