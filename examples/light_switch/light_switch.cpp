@@ -20,9 +20,9 @@ void feed_machine_until(FSM& machine, int delay_ms) {
     while (true) {
 
         auto feed_result = machine.feed();
-        if (feed_result.handled_transition()) {
+        if (feed_result.transition()) {
             continue;
-        } else if (feed_result.unhandled_transition()) {
+        } else if (feed_result.unhandled_event()) {
             break;
         } else if (feed_result.has_value() == false) {
             // returning no value means don't do anything

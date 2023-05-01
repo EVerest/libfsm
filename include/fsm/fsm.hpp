@@ -38,12 +38,12 @@ public:
         return (state == InternalState::INTERNAL_ERROR);
     }
 
-    bool handled_transition() const {
-        return (state == InternalState::HANDLED_TRANSITION);
+    bool transition() const {
+        return (state == InternalState::TRANSITION);
     }
 
-    bool unhandled_transition() const {
-        return (state == InternalState::UNHANDLED_TRANSITION);
+    bool unhandled_event() const {
+        return (state == InternalState::UNHANDLED_EVENT);
     }
 
     ResultType& operator*() {
@@ -72,9 +72,7 @@ public:
     FSM(FSM&& other) = delete;
     FSM& operator=(const FSM& other) = delete;
     FSM& operator=(FSM&& other) = delete;
-    ~FSM() {
-        reset();
-    }
+    ~FSM() = default;
 
     template <typename StateType, typename... Args> void reset(Args&&... args) {
         reset();
@@ -123,7 +121,7 @@ public:
         // fall-though: event has been handled, clear current state and all states up to the handled level
 
         // note: this will change current_nesting_level
-        reset(handled_at_nesting_level);
+        reset(handled_at_nesting_level, true);
 
         auto const compound_state = state_allocator.pull_compound_state<CompoundStateType>();
 
@@ -156,9 +154,9 @@ public:
         if (result.is_event) {
             switch (handle_event(result.event)) {
             case HandleEventResult::SUCCESS:
-                return FeedResultState::HANDLED_TRANSITION;
+                return FeedResultState::TRANSITION;
             case HandleEventResult::UNHANDLED:
-                return FeedResultState::UNHANDLED_TRANSITION;
+                return FeedResultState::UNHANDLED_EVENT;
             default:
                 // NOTE: everything else should be an internal error
                 return FeedResultState::INTERNAL_ERROR;
@@ -171,16 +169,19 @@ public:
     }
 
 private:
-    // FIXME (aw): we don't want leave to be called on hard reset or on destructor, need to split this up!
-    void reset(size_t up_to_nested_level = 0) {
+    void reset(size_t up_to_nested_level = 0, bool execute_leave = false) {
         // leave and destroy everything allocated
         if (current_state) {
-            current_state->leave();
+            if (execute_leave) {
+                current_state->leave();
+            }
             current_state.reset();
         }
 
         while (compound_stack.size() > up_to_nested_level) {
-            compound_stack.back()->leave();
+            if (execute_leave) {
+                compound_stack.back()->leave();
+            }
             compound_stack.pop_back();
         }
     }
@@ -258,7 +259,7 @@ public:
         // fall-though: event has been handled, clear current state and all states up to the handled level
 
         // note: this will change current_nesting_level
-        reset(handled_at_nesting_level);
+        reset(handled_at_nesting_level, true);
 
         const auto compound_state = state_allocator.template pull_compound_state<CompoundStateType>();
 
@@ -294,9 +295,9 @@ public:
         if (result.is_event) {
             switch (handle_event(result.event)) {
             case HandleEventResult::SUCCESS:
-                return FeedResultState::HANDLED_TRANSITION;
+                return FeedResultState::TRANSITION;
             case HandleEventResult::UNHANDLED:
-                return FeedResultState::UNHANDLED_TRANSITION;
+                return FeedResultState::UNHANDLED_EVENT;
             default:
                 // NOTE: everything else should be an internal error
                 return FeedResultState::INTERNAL_ERROR;
@@ -309,18 +310,21 @@ public:
     }
 
 private:
-    // FIXME (aw): we don't want leave to be called on hard reset or on destructor, need to split this up!
-    void reset(size_t up_to_nested_level = 0) {
+    void reset(size_t up_to_nested_level = 0, bool execute_leave = false) {
         // leave and destroy everything allocated
         if (current_state) {
-            current_state->leave();
+            if (execute_leave) {
+                current_state->leave();
+            }
             current_state->~SimpleStateBase();
             current_state = nullptr;
         }
 
         while (current_nesting_level > up_to_nested_level) {
             auto& compound_state = compound_states[current_nesting_level - 1];
-            compound_state->leave();
+            if (execute_leave) {
+                compound_state->leave();
+            }
             compound_state->~CompoundStateBase();
             compound_state = nullptr;
             current_nesting_level--;

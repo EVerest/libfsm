@@ -13,8 +13,8 @@ struct is_base_state_of {
 };
 
 enum class FeedResultState {
-    HANDLED_TRANSITION,
-    UNHANDLED_TRANSITION,
+    TRANSITION,
+    UNHANDLED_EVENT,
     INTERNAL_ERROR,
     HAS_VALUE,
     NO_VALUE,
