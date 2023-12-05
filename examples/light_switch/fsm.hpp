@@ -19,10 +19,10 @@ enum class Event {
 };
 
 #ifdef HEAP_FREE_MODE
-    using BufferType = fsm::buffer::SwapBuffer<24, 16, 2>;
-    using FSM = fsm::FSM<Event, int, BufferType>;
+using BufferType = fsm::buffer::SwapBuffer<24, 16, 2>;
+using FSM = fsm::FSM<Event, int, BufferType>;
 #else
-    using FSM = fsm::FSM<Event, int>;
+using FSM = fsm::FSM<Event, int>;
 #endif
 
 using SimpleState = fsm::states::StateWithContext<FSM::SimpleStateType, Context>;
