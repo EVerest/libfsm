@@ -16,20 +16,21 @@ if (CODE_COVERAGE)
     evc_include(CodeCoverage)
 endif()
 
-add_executable(test_state_allocator state_allocator.cpp)
-target_link_libraries(test_state_allocator
+set(TEST_TARGET_NAME ${PROJECT_NAME}_tests)
+add_executable(${TEST_TARGET_NAME} state_allocator.cpp)
+target_link_libraries(${TEST_TARGET_NAME}
     PRIVATE
         fsm::fsm
         Catch2::Catch2WithMain
 )
 
 if (CODE_COVERAGE)
-    append_coverage_compiler_flags_to_target(test_state_allocator)
+    append_coverage_compiler_flags_to_target(${TEST_TARGET_NAME})
     setup_target_for_coverage_gcovr_html(
         NAME coverage
-        EXECUTABLE test_state_allocator
+        EXECUTABLE ${TEST_TARGET_NAME}
         BASE_DIRECTORY "${PROJECT_SOURCE_DIR}/include"
 )
 endif()
 
-catch_discover_tests(test_state_allocator)
+catch_discover_tests(${TEST_TARGET_NAME})
