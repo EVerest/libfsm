@@ -50,7 +50,7 @@ public:
         return true;
     }
 
-        template <typename SimpleStateType> auto pull_simple_state() {
+    template <typename SimpleStateType> auto pull_simple_state() {
         auto retval = reinterpret_cast<SimpleStateType*>(simple_state);
         if (retval) {
             simple_state = nullptr;
