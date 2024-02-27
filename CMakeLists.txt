@@ -42,7 +42,6 @@ endif()
 #
 if((${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME} OR ${PROJECT_NAME}_BUILD_TESTING) AND BUILD_TESTING)
     include(CTest)
-    enable_testing()
     add_subdirectory(tests)
 endif()
 
