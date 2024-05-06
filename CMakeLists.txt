@@ -16,7 +16,8 @@ find_package(everest-cmake 0.1 REQUIRED
 #
 option(BUILD_EXAMPLES "enable building of examples" OFF)
 option(FSM_INSTALL "Install the library (shared data might be installed anyway)" ${EVC_MAIN_PROJECT})
-
+option(${PROJECT_NAME}_BUILD_TESTING "Build unit tests, used if included as dependency" OFF)
+option(BUILD_TESTING "Build unit tests, used if standalone project" OFF)
 
 #
 # library declaration
@@ -39,7 +40,7 @@ endif()
 #
 # tests
 #
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+if((${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME} OR ${PROJECT_NAME}_BUILD_TESTING) AND BUILD_TESTING)
     include(CTest)
     add_subdirectory(tests)
 endif()
