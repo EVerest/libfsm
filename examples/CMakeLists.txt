@@ -1,1 +1,2 @@
 add_subdirectory(light_switch)
+add_subdirectory(light_switch_v2)
